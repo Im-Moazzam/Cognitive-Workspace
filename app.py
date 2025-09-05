@@ -41,9 +41,20 @@ if st.session_state.patient_data:
     buffer = io.BytesIO()
     with pd.ExcelWriter(buffer, engine="xlsxwriter") as writer:
         df.to_excel(writer, index=False, sheet_name="Cognitive Works Patients")
+    
+    # Ask user for filename (default provided)
+    custom_filename = st.text_input(
+        "Enter filename for Excel download:",
+        value="cognitive_works_coding_results.xlsx"
+    )
+    # Ensure the filename ends with .xlsx
+    if not custom_filename.lower().endswith('.xlsx'):
+        custom_filename += '.xlsx'
+
+
     st.download_button(
         label="📥 Download Results as Excel",
         data=buffer.getvalue(),
-        file_name="cognitive_works_coding_results.xlsx",
+        file_name=custom_filename,
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )

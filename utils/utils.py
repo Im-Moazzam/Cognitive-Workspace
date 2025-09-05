@@ -49,6 +49,9 @@ def extract_icd10_from_assessment(text: str) -> list:
 
     return codes
 
+def is_existing_patient(text: str) -> bool:
+    pattern = r"\bRETURN (?:FROM|FORM) INTAKE\b"
+    return bool(re.search(pattern, text, re.IGNORECASE))
 
 def extract_patient_info(text: str) -> dict:
     data = {}
@@ -95,6 +98,16 @@ def extract_patient_info(text: str) -> dict:
         data["Insurance"] = payer_match.group(1).strip()
         
     data["ICD Codes"] = ", ".join(extract_icd10_from_assessment(text))
+    
+    data["CPT Codes"] = []
+    if is_existing_patient(text):
+        data["CPT Codes"].append("99214-GT")
+    else:    
+        data["CPT Codes"].append("99205-GT")
+
+    data["CPT Codes"].append("90833-GT")
+    data["CPT Codes"] = ", ".join(data["CPT Codes"])
+    
     return data
 
 
